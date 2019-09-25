@@ -9,7 +9,7 @@
 import UIKit
 
 class CarouselCell: UICollectionViewCell {
-    
+
     // MARK: - Private Properties
 
     private lazy var imageView: UIImageView = {
@@ -33,10 +33,24 @@ class CarouselCell: UICollectionViewCell {
         view.backgroundColor = Configuration.TitleBackgroundColor
         return view
     }()
+    
+    private lazy var tickImageView: UIImageView = {
+        let imgV = UIImageView()
+        imgV.translatesAutoresizingMaskIntoConstraints = false
+        imgV.image = UIImage(named: "iconTick")
+        imgV.alpha = 0.0
+        return imgV
+    }()
 
     private let maskShapeLayer: CAShapeLayer = CAShapeLayer()
     
     // MARK: - Initializers
+    
+    override var isSelected: Bool{
+        didSet(newValue){
+            _ = newValue ? showIcon() : hideIcon()
+        }
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -68,6 +82,14 @@ class CarouselCell: UICollectionViewCell {
         }
     }
     
+    func showIcon() {
+        tickImageView.alpha = 1.0
+    }
+    
+    func hideIcon() {
+        tickImageView.alpha = 0.0
+    }
+    
     // MARK: - Private Methods
     
     private func setupCellSubviews() {
@@ -84,6 +106,7 @@ class CarouselCell: UICollectionViewCell {
     private func setupDetails() {
         addSubview(titleBackgroundView)
         addSubview(nameLabel)
+        addSubview(tickImageView)
         
         titleBackgroundView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
         titleBackgroundView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
@@ -93,6 +116,11 @@ class CarouselCell: UICollectionViewCell {
         nameLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10).isActive = true
         nameLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10).isActive = true
         nameLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -40).isActive = true
+        
+        tickImageView.topAnchor.constraint(equalTo: topAnchor, constant: 20).isActive = true
+        tickImageView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20).isActive = true
+        tickImageView.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        tickImageView.heightAnchor.constraint(equalToConstant: 40).isActive = true
     }
 }
 

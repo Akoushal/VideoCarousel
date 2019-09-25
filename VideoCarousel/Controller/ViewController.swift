@@ -40,6 +40,9 @@ class ViewController: UIViewController {
         return actInd
     }()
     
+    //save the indexPath of last selected cell
+    private var lastSelectedIndexPath: IndexPath?
+    
     // MARK: - Injection
     let viewModel = VideoViewModel(manager: NetworkManager())
     
@@ -118,13 +121,10 @@ extension ViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CarouselCell.reusableIndentifer, for: indexPath) as? CarouselCell else { return UICollectionViewCell()}
-        if indexPath.item == 0 {
-            collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredHorizontally)
-            cell.layer.borderColor = UIColor.gray.cgColor
-        } else {
-            cell.layer.borderColor = UIColor.white.cgColor
-        }
         cell.configureCell(with: viewModel.videosList[indexPath.item])
+        
+        //update last select state from lastSelectedIndexPath
+        cell.isSelected = (lastSelectedIndexPath == indexPath)
         return cell
     }
 }
@@ -132,13 +132,16 @@ extension ViewController: UICollectionViewDataSource {
 extension ViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let cell = collectionView.cellForItem(at: indexPath)
-        cell?.layer.borderColor = UIColor.gray.cgColor
-    }
-
-    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-        let cell = collectionView.cellForItem(at: indexPath as IndexPath)
-        cell?.layer.borderColor = UIColor.white.cgColor
-        collectionView.deselectItem(at: indexPath, animated: true)
+        //if selected item is equal to current selected item, ignore it
+        guard lastSelectedIndexPath != indexPath, let selectedCell = collectionView.cellForItem(at: indexPath) as? CarouselCell else {
+            return
+        }
+        
+        if lastSelectedIndexPath != nil {
+            collectionView.deselectItem(at: lastSelectedIndexPath!, animated: false)
+        }
+                
+        selectedCell.isSelected = true
+        lastSelectedIndexPath = indexPath
     }
 }
