@@ -10,7 +10,6 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    // MARK: - Private Properties
     lazy var collectionView: UICollectionView = {
         let layout = PagingCollectionViewLayout()
         layout.scrollDirection = .horizontal
@@ -29,6 +28,8 @@ class ViewController: UIViewController {
         collectionView.delegate = self
         return collectionView
     }()
+    
+    // MARK: - Private Properties
     
     private lazy var activityIndicator: UIActivityIndicatorView = {
         let actInd = UIActivityIndicatorView(frame: .zero)
@@ -117,14 +118,27 @@ extension ViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CarouselCell.reusableIndentifer, for: indexPath) as? CarouselCell else { return UICollectionViewCell()}
-        
+        if indexPath.item == 0 {
+            collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredHorizontally)
+            cell.layer.borderColor = UIColor.gray.cgColor
+        } else {
+            cell.layer.borderColor = UIColor.white.cgColor
+        }
         cell.configureCell(with: viewModel.videosList[indexPath.item])
         return cell
     }
 }
 
 extension ViewController: UICollectionViewDelegate {
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("Selected Cell #\(indexPath.row)")
+        let cell = collectionView.cellForItem(at: indexPath)
+        cell?.layer.borderColor = UIColor.gray.cgColor
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        let cell = collectionView.cellForItem(at: indexPath as IndexPath)
+        cell?.layer.borderColor = UIColor.white.cgColor
+        collectionView.deselectItem(at: indexPath, animated: true)
     }
 }
